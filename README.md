@@ -1,6 +1,20 @@
 # Prueba Técnica – API de Usuarios (Spring Boot)
 
-Servicio REST simple con almacenamiento en memoria para registrar usuarios y listarlos durante la sesión de ejecución.
+Aplicación REST sencilla para registrar y listar usuarios en memoria (sin base de datos). Incluye validación de entrada, manejo global de errores y unicidad de email insensible a mayúsculas/minúsculas. El proyecto está dockerizado (multi‑stage) y provee healthcheck con Spring Boot Actuator. Se añaden pruebas unitarias e integración básicas que puedes ejecutar manualmente con Maven.
+
+Características principales:
+- Endpoints: `POST /users` y `GET /users` con validación (Jakarta Validation).
+- Regla de negocio: email único (case‑insensitive) con respuesta `409 Conflict`.
+- Manejo de errores uniforme (400/409) vía `GlobalExceptionHandler`.
+- Dockerfile multi‑stage y `docker-compose.yml` con healthcheck.
+- Actuator: `/actuator/health`, liveness y readiness probes activados.
+- Pruebas sencillas (servicio, controlador y health) ejecutables a mano.
+
+Novedades agregadas:
+- Dockerización completa (Dockerfile, `.dockerignore`, `docker-compose.yml`).
+- Healthcheck del contenedor apuntando a `/actuator/health`.
+- Limpieza de configuración por defecto y código no esencial.
+- Pruebas unitarias/integración básicas e instrucciones para ejecutarlas.
 
 ## Endpoints
 
@@ -44,6 +58,19 @@ La aplicación arranca en `http://localhost:8080`.
 
 ## Docker
 
+Construir la imagen y ejecutar:
+
+```bash
+docker build -t prueba-globus-cargo .
+docker run --rm -p 8080:8080 prueba-globus-cargo
+```
+
+Probar:
+
+```bash
+curl http://localhost:8080/users
+```
+
 ## Docker Compose
 
 Levantar y ver estado de salud:
@@ -60,10 +87,40 @@ El servicio declara un healthcheck que consulta `GET /actuator/health` dentro de
 
 Se expone Actuator con el endpoint de salud:
 
-- `GET /actuator/health` → `{ "status": "UP" }` cuando la app está sana
-- `GET /actuator/health/liveness` y `/actuator/health/readiness` disponibles (probes activados)
+- `GET /actuator/health` → `{ "status": "UP" }` cuando la app está sana.
+- `GET /actuator/health/liveness` y `/actuator/health/readiness` disponibles (probes activados).
 
 Notas:
 
 - Solo `health` e `info` están expuestos por HTTP.
+- Puedes ajustar memoria de la JVM con `JAVA_OPTS` (véase `docker-compose.yml`).
+
+## Pruebas (ejecución manual)
+
+Requisitos: Java 17+ y Maven.
+
+Ejecutar todas las pruebas:
+
+```bash
+mvn -q test
+```
+
+Ejecutar una clase de prueba específica:
+
+```bash
+# Servicio (reglas de negocio y duplicados)
+mvn -q -Dtest=com.globus.cargo.users.UserServiceTest test
+
+# Controlador (201, 409 y 400)
+mvn -q -Dtest=com.globus.cargo.users.UserControllerTest test
+
+# Actuator health
+mvn -q -Dtest=com.globus.cargo.ActuatorHealthTest test
+```
+
+Archivos de prueba añadidos:
+
+- `src/test/java/com/globus/cargo/users/UserServiceTest.java`
+- `src/test/java/com/globus/cargo/users/UserControllerTest.java`
+- `src/test/java/com/globus/cargo/ActuatorHealthTest.java`
 
