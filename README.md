@@ -32,7 +32,7 @@ Servicio REST simple con almacenamiento en memoria para registrar usuarios y lis
     ]
     ```
 
-## Ejecución
+## Ejecución (local)
 
 Requisitos: Java 17+ y Maven.
 
@@ -42,9 +42,28 @@ mvn spring-boot:run
 
 La aplicación arranca en `http://localhost:8080`.
 
-## Notas
+## Docker
 
-- El almacenamiento es en memoria (se pierde al reiniciar).
-- La unicidad del email se valida de forma no sensible a mayúsculas/minúsculas.
-- Validaciones básicas: `id` requerido, `name` requerido, `email` con formato válido.
+## Docker Compose
+
+Levantar y ver estado de salud:
+
+```bash
+docker compose up --build -d
+docker compose ps
+docker compose logs -f
+```
+
+El servicio declara un healthcheck que consulta `GET /actuator/health` dentro del contenedor. El estado `healthy` indica que la app está lista.
+
+## Salud / Actuator
+
+Se expone Actuator con el endpoint de salud:
+
+- `GET /actuator/health` → `{ "status": "UP" }` cuando la app está sana
+- `GET /actuator/health/liveness` y `/actuator/health/readiness` disponibles (probes activados)
+
+Notas:
+
+- Solo `health` e `info` están expuestos por HTTP.
 

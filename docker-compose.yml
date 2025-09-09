@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    image: prueba-globus-cargo:latest
+    ports:
+      - "8080:8080"
+    environment:
+      # Ajustes opcionales de la JVM, por ejemplo memoria
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      # Usar forma string evita problemas de comillas en YAML
+      test: >
+        CMD-SHELL curl -fsS http://localhost:8080/actuator/health | grep -q '"status":"UP"'
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
