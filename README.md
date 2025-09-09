@@ -16,6 +16,15 @@ Novedades agregadas:
 - Limpieza de configuración por defecto y código no esencial.
 - Pruebas unitarias/integración básicas e instrucciones para ejecutarlas.
 
+Cosas que se podrían agregar:
+- Persistencia en base de datos relacional con JPA/Hibernate
+- Documentación con Swagger/OpenAPI
+- Autenticación y autorización con JWT u OAuth2
+- Pipeline de integración continua con GitHub Actions u otra herramienta
+- Pruebas automatizadas de endpoints con Testcontainers o MockMvc
+- Métricas adicionales en Actuator (requests, memoria, GC)
+- Cache en consultas de usuarios para optimizar rendimiento
+
 ## Endpoints
 
 - POST `/users`
@@ -117,10 +126,3 @@ mvn -q -Dtest=com.globus.cargo.users.UserControllerTest test
 # Actuator health
 mvn -q -Dtest=com.globus.cargo.ActuatorHealthTest test
 ```
-
-Archivos de prueba añadidos:
-
-- `src/test/java/com/globus/cargo/users/UserServiceTest.java`
-- `src/test/java/com/globus/cargo/users/UserControllerTest.java`
-- `src/test/java/com/globus/cargo/ActuatorHealthTest.java`
-
